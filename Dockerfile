@@ -12,4 +12,7 @@ FROM openjdk:11.0-jre-slim
 EXPOSE 8080
 WORKDIR /usr/src/myapp
 COPY --from=build /tmp/target/backend.jar .
+RUN useradd -s /bin/bash spring
+RUN chown -R spring .
+USER spring
 CMD java -jar backend.jar
