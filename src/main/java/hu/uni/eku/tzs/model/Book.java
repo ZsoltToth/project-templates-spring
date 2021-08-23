@@ -9,8 +9,8 @@ import lombok.Setter;
 @Setter
 public class Book {
 
-   private String isbn;
-   private Author author;
-   private String title;
-   private String language;
+    private String isbn;
+    private Author author;
+    private String title;
+    private String language;
 }
