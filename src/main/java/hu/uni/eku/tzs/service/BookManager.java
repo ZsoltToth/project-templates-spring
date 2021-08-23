@@ -9,7 +9,7 @@ public interface BookManager {
 
     Book record(Book book) throws BookAlreadyExistsException;
 
-    Book readByIsbn(String isbn);
+    Book readByIsbn(String isbn) throws BookNotFoundException;
 
     Collection<Book> readAll();
 

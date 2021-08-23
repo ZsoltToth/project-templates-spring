@@ -7,7 +7,9 @@ import hu.uni.eku.tzs.dao.entity.BookEntity;
 import hu.uni.eku.tzs.model.Author;
 import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
+import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
@@ -17,6 +19,51 @@ public class BookManagerImpl implements BookManager {
     private final BookRepository bookRepository;
 
     private final AuthorRepository authorRepository;
+
+    @Override
+    public Book record(Book book) throws BookAlreadyExistsException {
+        if (bookRepository.findById(book.getIsbn()).isPresent()) {
+            throw new BookAlreadyExistsException();
+        }
+        AuthorEntity authorEntity = this.readOrRecordAuthor(book.getAuthor());
+        BookEntity bookEntity = bookRepository.save(
+            BookEntity.builder()
+                .isbn(book.getIsbn())
+                .author(authorEntity)
+                .title(book.getTitle())
+                .language(book.getLanguage())
+                .build()
+        );
+        return convertBookEntity2Model(bookEntity);
+    }
+
+    @Override
+    public Book readByIsbn(String isbn) throws BookNotFoundException {
+        Optional<BookEntity> entity = bookRepository.findById(isbn);
+        if (entity.isEmpty()) {
+            throw new BookNotFoundException(String.format("Cannot find book with ISBN %s", isbn));
+        }
+
+        return convertBookEntity2Model(entity.get());
+    }
+
+    @Override
+    public Collection<Book> readAll() {
+        return bookRepository.findAll().stream().map(BookManagerImpl::convertBookEntity2Model)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public Book modify(Book book) {
+        BookEntity entity = convertBookModel2Entity(book);
+        return convertBookEntity2Model(bookRepository.save(entity));
+    }
+
+    @Override
+    public void delete(Book book) {
+        bookRepository.delete(convertBookModel2Entity(book));
+
+    }
 
     private static Book convertBookEntity2Model(BookEntity bookEntity) {
         return new Book(
@@ -49,29 +96,13 @@ public class BookManagerImpl implements BookManager {
             .build();
     }
 
-    @Override
-    public Book record(Book book) throws BookAlreadyExistsException {
-        if (bookRepository.findById(book.getIsbn()).isPresent()) {
-            throw new BookAlreadyExistsException();
-        }
-        AuthorEntity authorEntity = this.readOrRecordAuthor(book.getAuthor());
-        BookEntity bookEntity = bookRepository.save(
-            BookEntity.builder()
-                .isbn(book.getIsbn())
-                .author(authorEntity)
-                .title(book.getTitle())
-                .language(book.getLanguage())
-                .build()
-        );
-        return convertBookEntity2Model(bookEntity);
-    }
-
     private AuthorEntity readOrRecordAuthor(Author author) {
         if (authorRepository.findById(author.getId()).isPresent()) {
             return authorRepository.findById(author.getId()).get();
         }
         return authorRepository.save(
             AuthorEntity.builder()
+                .id(author.getId())
                 .firstName(author.getFirstName())
                 .lastName(author.getLastName())
                 .nationality(author.getNationality())
@@ -79,26 +110,4 @@ public class BookManagerImpl implements BookManager {
         );
     }
 
-    @Override
-    public Book readByIsbn(String isbn) {
-        return convertBookEntity2Model(bookRepository.findById(isbn).get());
-    }
-
-    @Override
-    public Collection<Book> readAll() {
-        return bookRepository.findAll().stream().map(BookManagerImpl::convertBookEntity2Model)
-            .collect(Collectors.toList());
-    }
-
-    @Override
-    public Book modify(Book book) {
-        BookEntity entity = convertBookModel2Entity(book);
-        return convertBookEntity2Model(bookRepository.save(entity));
-    }
-
-    @Override
-    public void delete(Book book) {
-        bookRepository.delete(convertBookModel2Entity(book));
-
-    }
 }

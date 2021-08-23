@@ -7,6 +7,9 @@ import hu.uni.eku.tzs.dao.entity.BookEntity;
 import hu.uni.eku.tzs.model.Author;
 import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
+import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
+import java.util.Collection;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,6 +53,24 @@ class BookManagerImplTest {
     }
 
     @Test
+    void recordBookUnknownAuthor() throws BookAlreadyExistsException {
+        // given
+        Author frankHerbert = BookDataProvider.getFrankHerbertModel();
+        AuthorEntity frankHerbertEntity = BookDataProvider.getFrankHerbertEntity();
+        Book dune = BookDataProvider.getDune();
+        BookEntity duneEntity = BookDataProvider.getDuneEntity();
+        when(bookRepository.findById(BookDataProvider.DUNE_ISBN)).thenReturn(Optional.empty());
+        when(authorRepository.findById(frankHerbert.getId())).thenReturn(Optional.empty());
+        when(authorRepository.save(frankHerbertEntity)).thenReturn(frankHerbertEntity);
+        when(bookRepository.save(duneEntity)).thenReturn(duneEntity);
+        // when
+        Book actual = service.record(dune);
+        // then
+        assertThat(actual).usingRecursiveComparison()
+            .isEqualTo(dune);
+    }
+
+    @Test
     void recordBookAlreadyExistsException() {
         // given
         Book hg2g = BookDataProvider.getHitchhikersGuide();
@@ -61,13 +82,78 @@ class BookManagerImplTest {
         }).isInstanceOf(BookAlreadyExistsException.class);
     }
 
+    @Test
+    void readByIsbnHappyPath() throws BookNotFoundException {
+        // given
+        when(bookRepository.findById(BookDataProvider.HG2G_ISBN)).thenReturn(Optional.of(BookDataProvider.getHitchhikersGuideEntity()));
+        Book expected = BookDataProvider.getHitchhikersGuide();
+        // when
+        Book actual = service.readByIsbn(BookDataProvider.HG2G_ISBN);
+        // then
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    @Test
+    void readByIsbnBookNotFoundException(){
+        // given
+        when(bookRepository.findById(BookDataProvider.UNKNOWN_ISBN)).thenReturn(Optional.empty());
+        // when then
+        assertThatThrownBy(()->{
+            service.readByIsbn(BookDataProvider.UNKNOWN_ISBN);
+        }).isInstanceOf(BookNotFoundException.class)
+        .hasMessageContaining(BookDataProvider.UNKNOWN_ISBN);
+    }
+
+    @Test
+    void readAllHappyPath(){
+        // given
+        List<BookEntity> bookEntities = List.of(
+            BookDataProvider.getDuneEntity(),
+            BookDataProvider.getHitchhikersGuideEntity()
+        );
+        Collection<Book> expectedBooks = List.of(
+            BookDataProvider.getDune(),
+            BookDataProvider.getHitchhikersGuide()
+        );
+        when(bookRepository.findAll()).thenReturn(bookEntities);
+        // when
+        Collection<Book> actualBooks = service.readAll();
+        // then
+        assertThat(actualBooks)
+            .usingRecursiveComparison()
+            .isEqualTo(expectedBooks);
+//            .containsExactlyInAnyOrderElementsOf(expectedBooks);
+    }
+
+    @Test
+    void modifyBookHappyPath(){
+        // given
+        Book hg2g = BookDataProvider.getHitchhikersGuide();
+        BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
+        when(bookRepository.save(hg2gEntity)).thenReturn(hg2gEntity);
+        // when
+        Book actual = service.modify(hg2g);
+        // then
+        assertThat(actual).usingRecursiveComparison()
+            .isEqualTo(hg2g);
+
+    }
+
     private static class BookDataProvider{
 
+        public static final String UNKNOWN_ISBN = "1-00000-000-X";
         public static final String HG2G_ISBN = "1-85695-028-X";
         public static final String HG2G_TITLE = "The Hitchhiker's Guide to the Galaxy";
+        public static final String DUNE_ISBN = "978-0240807720";
+        public static final String DUNE_TITLE = "Dune";
+
 
         public static Author getDouglasAdamsModel(){
             return new Author(1, "Douglas", "Adams", "English");
+        }
+
+        public static Author getFrankHerbertModel(){
+            return new Author(2, "Frank", "Herbert", "American");
         }
 
         public static AuthorEntity getDouglasAdamsEntity(){
@@ -79,8 +165,21 @@ class BookManagerImplTest {
                 .build();
         }
 
+        public static AuthorEntity getFrankHerbertEntity(){
+            return AuthorEntity.builder()
+                .id(2)
+                .firstName("Frank")
+                .lastName("Herbert")
+                .nationality("American")
+                .build();
+        }
+
        public static Book getHitchhikersGuide(){
            return new Book(HG2G_ISBN, getDouglasAdamsModel(), HG2G_TITLE, "English");
+       }
+
+       public static Book getDune(){
+            return new Book(DUNE_ISBN, getFrankHerbertModel(), DUNE_TITLE, "English");
        }
 
        public static BookEntity getHitchhikersGuideEntity(){
@@ -90,6 +189,15 @@ class BookManagerImplTest {
                .author(getDouglasAdamsEntity())
                .language("English")
                .build();
+       }
+
+       public static BookEntity getDuneEntity(){
+            return BookEntity.builder()
+                .isbn(DUNE_ISBN)
+                .title(DUNE_TITLE)
+                .author(getFrankHerbertEntity())
+                .language("English")
+                .build();
        }
     }
 }
