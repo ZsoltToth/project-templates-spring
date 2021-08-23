@@ -10,7 +10,10 @@ import lombok.Setter;
 public class Book {
 
     private String isbn;
+
     private Author author;
+
     private String title;
+
     private String language;
 }

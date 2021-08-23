@@ -7,6 +7,8 @@ import hu.uni.eku.tzs.service.ComplexNumberService;
 import hu.uni.eku.tzs.service.exceptions.ComplexNumberAlreadyExistsException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(value = "/complex-number")
@@ -34,21 +33,21 @@ public class ComplexNumberController {
     @PostMapping("/record")
     @ApiOperation(value = "Record")
     public void record(
-            @RequestBody
-                    ComplexNumberRecordRequestDto request
+        @RequestBody
+            ComplexNumberRecordRequestDto request
     ) {
         log.info("Recording of Complex Number ({},{})", request.getReal(), request.getImag());
         try {
             service.record(new ComplexNumber(request.getReal(), request.getImag()));
         } catch (ComplexNumberAlreadyExistsException e) {
             log.info(
-                    "Complex number ({},{}) is already exists! Message: {}",
-                    request.getReal(),
-                    request.getImag(),
-                    e.getMessage());
+                "Complex number ({},{}) is already exists! Message: {}",
+                request.getReal(),
+                request.getImag(),
+                e.getMessage());
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    e.getMessage()
+                HttpStatus.CONFLICT,
+                e.getMessage()
             );
         }
     }
@@ -58,10 +57,10 @@ public class ComplexNumberController {
     @ApiOperation(value = "Query Complex Numbers")
     public Collection<ComplexNumberDto> query() {
         return service.readAll().stream().map(model ->
-                ComplexNumberDto.builder()
-                        .real(model.getReal())
-                        .imaginary(model.getImaginary())
-                        .build()
+            ComplexNumberDto.builder()
+                .real(model.getReal())
+                .imaginary(model.getImaginary())
+                .build()
         ).collect(Collectors.toList());
     }
 

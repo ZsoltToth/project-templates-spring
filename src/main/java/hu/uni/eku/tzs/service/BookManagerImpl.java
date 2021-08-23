@@ -4,18 +4,31 @@ import hu.uni.eku.tzs.dao.AuthorRepository;
 import hu.uni.eku.tzs.dao.BookRepository;
 import hu.uni.eku.tzs.dao.entity.AuthorEntity;
 import hu.uni.eku.tzs.dao.entity.BookEntity;
-import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.model.Author;
+import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Collection;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class BookManagerImpl implements BookManager {
 
     private final BookRepository bookRepository;
+
     private final AuthorRepository authorRepository;
+
+    private static Book convertBookEntity2Model(BookEntity bookEntity) {
+        return new Book(
+            bookEntity.getIsbn(),
+            new Author(
+                bookEntity.getAuthor().getId(),
+                bookEntity.getAuthor().getFirstName(),
+                bookEntity.getAuthor().getLastName(),
+                bookEntity.getAuthor().getNationality()),
+            bookEntity.getTitle(),
+            bookEntity.getLanguage()
+        );
+    }
 
     @Override
     public Book record(Book book) throws BookAlreadyExistsException {
@@ -24,12 +37,12 @@ public class BookManagerImpl implements BookManager {
         }
         AuthorEntity authorEntity = this.readOrRecordAuthor(book.getAuthor());
         BookEntity bookEntity = bookRepository.save(
-                BookEntity.builder()
-                        .isbn(book.getIsbn())
-                        .author(authorEntity)
-                        .title(book.getTitle())
-                        .language(book.getLanguage())
-                        .build()
+            BookEntity.builder()
+                .isbn(book.getIsbn())
+                .author(authorEntity)
+                .title(book.getTitle())
+                .language(book.getLanguage())
+                .build()
         );
         return BookManagerImpl.convertBookEntity2Model(bookEntity);
     }
@@ -39,24 +52,11 @@ public class BookManagerImpl implements BookManager {
             return authorRepository.findById(author.getId()).get();
         }
         return authorRepository.save(
-                AuthorEntity.builder()
-                        .firstName(author.getFirstName())
-                        .lastName(author.getLastName())
-                        .nationality(author.getNationality())
-                        .build()
-        );
-    }
-
-    private static Book convertBookEntity2Model(BookEntity bookEntity){
-        return new Book(
-                bookEntity.getIsbn(),
-                new Author(
-                        bookEntity.getAuthor().getId(),
-                        bookEntity.getAuthor().getFirstName(),
-                        bookEntity.getAuthor().getLastName(),
-                        bookEntity.getAuthor().getNationality()),
-                bookEntity.getTitle(),
-                bookEntity.getLanguage()
+            AuthorEntity.builder()
+                .firstName(author.getFirstName())
+                .lastName(author.getLastName())
+                .nationality(author.getNationality())
+                .build()
         );
     }
 

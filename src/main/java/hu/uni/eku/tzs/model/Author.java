@@ -10,7 +10,10 @@ import lombok.Setter;
 public class Author {
 
     private int id;
+
     private String firstName;
+
     private String lastName;
+
     private String nationality;
 }
