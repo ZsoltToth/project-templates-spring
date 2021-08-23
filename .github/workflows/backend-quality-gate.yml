@@ -5,10 +5,10 @@ name: Backend Quality Gate & Build Process
 
 on:
   push:
-    branches:
-      - '*'
-#  pull_request:
-#    branches: [ master ]
+#    branches:
+#      - '*'
+  pull_request:
+    branches: [ master ]
 
 jobs:
   quality:
