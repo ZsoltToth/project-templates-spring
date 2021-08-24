@@ -5,14 +5,20 @@ import hu.uni.eku.tzs.controller.dto.AuthorMapper;
 import hu.uni.eku.tzs.controller.dto.BookDto;
 import hu.uni.eku.tzs.controller.dto.BookMapper;
 import hu.uni.eku.tzs.model.Author;
+import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.BookManager;
+import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RequestMapping("/books")
 @RestController
@@ -32,11 +38,15 @@ public class BookController {
 
     }
 
-    @GetMapping("/test")
-    public AuthorDto hello() {
-        BookMapper mapper = Mappers.getMapper(BookMapper.class);
-        AuthorMapper authorMapper = Mappers.getMapper(AuthorMapper.class);
-        return authorMapper.author2AuthorDto(new Author(0, "first", "last", "nat"));
+    @PostMapping(value = {"","/"})
+    public BookDto record(@RequestBody BookDto recordRequestDto){
+        Book book = bookMapper.bookDto2Book(recordRequestDto);
+        try {
+            Book recordedBook = bookManager.record(book);
+            return bookMapper.book2bookDto(recordedBook);
+        } catch (BookAlreadyExistsException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 }
