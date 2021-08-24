@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,7 @@ public class BookController {
     }
 
     @PostMapping(value = { "", "/" })
-    public BookDto record(@RequestBody BookDto recordRequestDto) {
+    public BookDto create(@RequestBody BookDto recordRequestDto) {
         Book book = bookMapper.bookDto2Book(recordRequestDto);
         try {
             Book recordedBook = bookManager.record(book);
@@ -43,6 +44,13 @@ public class BookController {
         } catch (BookAlreadyExistsException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @PutMapping(value = { "", "/" })
+    public BookDto update(@RequestBody BookDto updateRequestDto) {
+        Book book = bookMapper.bookDto2Book(updateRequestDto);
+        Book updatedBook = bookManager.modify(book);
+        return bookMapper.book2bookDto(updatedBook);
     }
 
 }
