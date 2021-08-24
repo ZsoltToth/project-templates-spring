@@ -34,8 +34,8 @@ public class BookController {
 
     }
 
-    @PostMapping(value = {"","/"})
-    public BookDto record(@RequestBody BookDto recordRequestDto){
+    @PostMapping(value = { "", "/" })
+    public BookDto record(@RequestBody BookDto recordRequestDto) {
         Book book = bookMapper.bookDto2Book(recordRequestDto);
         try {
             Book recordedBook = bookManager.record(book);

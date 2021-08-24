@@ -5,14 +5,12 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Getter
 @Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Book {
 
     private String isbn;
