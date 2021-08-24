@@ -1,17 +1,13 @@
 package hu.uni.eku.tzs.controller;
 
-import hu.uni.eku.tzs.controller.dto.AuthorDto;
-import hu.uni.eku.tzs.controller.dto.AuthorMapper;
 import hu.uni.eku.tzs.controller.dto.BookDto;
 import hu.uni.eku.tzs.controller.dto.BookMapper;
-import hu.uni.eku.tzs.model.Author;
 import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.BookManager;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.mapstruct.factory.Mappers;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
