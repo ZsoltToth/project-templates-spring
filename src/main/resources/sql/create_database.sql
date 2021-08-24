@@ -1,1 +1,2 @@
-CREATE DATABASE complex;
+CREATE
+DATABASE complex;

@@ -7,25 +7,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@AllArgsConstructor
+@Data
 @Builder
-@Entity
-@Getter
 @NoArgsConstructor
-@Setter
-public class ComplexNumber {
+@AllArgsConstructor
+@Entity(name = "authors")
+public class AuthorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    @Column
-    private double realPart;
+    @Column(name = "first_name")
+    private String firstName;
 
-    @Column
-    private double imaginaryPart;
+    @Column(name = "last_name")
+    private String lastName;
+
+    @Column(name = "nationality")
+    private String nationality;
 }

@@ -1,7 +1,6 @@
 package hu.uni.eku.tzs.dao;
 
 import hu.uni.eku.tzs.model.ComplexNumber;
-
 import java.util.Collection;
 
 public interface ComplexNumberDao {
