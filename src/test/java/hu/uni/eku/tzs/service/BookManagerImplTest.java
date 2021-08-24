@@ -1,5 +1,9 @@
 package hu.uni.eku.tzs.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import hu.uni.eku.tzs.dao.AuthorRepository;
 import hu.uni.eku.tzs.dao.BookRepository;
 import hu.uni.eku.tzs.dao.entity.AuthorEntity;
@@ -10,18 +14,12 @@ import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
 import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class BookManagerImplTest {
@@ -77,7 +75,7 @@ class BookManagerImplTest {
         BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
         when(bookRepository.findById(BookDataProvider.HG2G_ISBN)).thenReturn(Optional.ofNullable(hg2gEntity));
         // when
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             service.record(hg2g);
         }).isInstanceOf(BookAlreadyExistsException.class);
     }
@@ -85,7 +83,8 @@ class BookManagerImplTest {
     @Test
     void readByIsbnHappyPath() throws BookNotFoundException {
         // given
-        when(bookRepository.findById(BookDataProvider.HG2G_ISBN)).thenReturn(Optional.of(BookDataProvider.getHitchhikersGuideEntity()));
+        when(bookRepository.findById(BookDataProvider.HG2G_ISBN))
+            .thenReturn(Optional.of(BookDataProvider.getHitchhikersGuideEntity()));
         Book expected = BookDataProvider.getHitchhikersGuide();
         // when
         Book actual = service.readByIsbn(BookDataProvider.HG2G_ISBN);
@@ -94,18 +93,18 @@ class BookManagerImplTest {
     }
 
     @Test
-    void readByIsbnBookNotFoundException(){
+    void readByIsbnBookNotFoundException() {
         // given
         when(bookRepository.findById(BookDataProvider.UNKNOWN_ISBN)).thenReturn(Optional.empty());
         // when then
-        assertThatThrownBy(()->{
+        assertThatThrownBy(() -> {
             service.readByIsbn(BookDataProvider.UNKNOWN_ISBN);
         }).isInstanceOf(BookNotFoundException.class)
-        .hasMessageContaining(BookDataProvider.UNKNOWN_ISBN);
+            .hasMessageContaining(BookDataProvider.UNKNOWN_ISBN);
     }
 
     @Test
-    void readAllHappyPath(){
+    void readAllHappyPath() {
         // given
         List<BookEntity> bookEntities = List.of(
             BookDataProvider.getDuneEntity(),
@@ -126,7 +125,7 @@ class BookManagerImplTest {
     }
 
     @Test
-    void modifyBookHappyPath(){
+    void modifyBookHappyPath() {
         // given
         Book hg2g = BookDataProvider.getHitchhikersGuide();
         BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
@@ -139,24 +138,28 @@ class BookManagerImplTest {
 
     }
 
-    private static class BookDataProvider{
+    private static class BookDataProvider {
 
         public static final String UNKNOWN_ISBN = "1-00000-000-X";
+
         public static final String HG2G_ISBN = "1-85695-028-X";
+
         public static final String HG2G_TITLE = "The Hitchhiker's Guide to the Galaxy";
+
         public static final String DUNE_ISBN = "978-0240807720";
+
         public static final String DUNE_TITLE = "Dune";
 
 
-        public static Author getDouglasAdamsModel(){
+        public static Author getDouglasAdamsModel() {
             return new Author(1, "Douglas", "Adams", "English");
         }
 
-        public static Author getFrankHerbertModel(){
+        public static Author getFrankHerbertModel() {
             return new Author(2, "Frank", "Herbert", "American");
         }
 
-        public static AuthorEntity getDouglasAdamsEntity(){
+        public static AuthorEntity getDouglasAdamsEntity() {
             return AuthorEntity.builder()
                 .id(1)
                 .firstName("Douglas")
@@ -165,7 +168,7 @@ class BookManagerImplTest {
                 .build();
         }
 
-        public static AuthorEntity getFrankHerbertEntity(){
+        public static AuthorEntity getFrankHerbertEntity() {
             return AuthorEntity.builder()
                 .id(2)
                 .firstName("Frank")
@@ -174,30 +177,30 @@ class BookManagerImplTest {
                 .build();
         }
 
-       public static Book getHitchhikersGuide(){
-           return new Book(HG2G_ISBN, getDouglasAdamsModel(), HG2G_TITLE, "English");
-       }
+        public static Book getHitchhikersGuide() {
+            return new Book(HG2G_ISBN, getDouglasAdamsModel(), HG2G_TITLE, "English");
+        }
 
-       public static Book getDune(){
+        public static Book getDune() {
             return new Book(DUNE_ISBN, getFrankHerbertModel(), DUNE_TITLE, "English");
-       }
+        }
 
-       public static BookEntity getHitchhikersGuideEntity(){
-           return BookEntity.builder()
-               .isbn(HG2G_ISBN)
-               .title(HG2G_TITLE)
-               .author(getDouglasAdamsEntity())
-               .language("English")
-               .build();
-       }
+        public static BookEntity getHitchhikersGuideEntity() {
+            return BookEntity.builder()
+                .isbn(HG2G_ISBN)
+                .title(HG2G_TITLE)
+                .author(getDouglasAdamsEntity())
+                .language("English")
+                .build();
+        }
 
-       public static BookEntity getDuneEntity(){
+        public static BookEntity getDuneEntity() {
             return BookEntity.builder()
                 .isbn(DUNE_ISBN)
                 .title(DUNE_TITLE)
                 .author(getFrankHerbertEntity())
                 .language("English")
                 .build();
-       }
+        }
     }
 }

@@ -1,15 +1,15 @@
-package hu.uni.eku.tzs.model;
+package hu.uni.eku.tzs.controller.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
-@AllArgsConstructor
+@Data
+@Builder
 @NoArgsConstructor
-public class Author {
+@AllArgsConstructor
+public class AuthorDto {
 
     private int id;
 

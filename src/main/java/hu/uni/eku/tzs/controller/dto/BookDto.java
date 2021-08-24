@@ -1,19 +1,19 @@
-package hu.uni.eku.tzs.model;
+package hu.uni.eku.tzs.controller.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@AllArgsConstructor
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
-public class Book {
+@AllArgsConstructor
+public class BookDto {
 
     private String isbn;
 
-    private Author author;
+    private AuthorDto author;
 
     private String title;
 

@@ -1,26 +1,24 @@
 package hu.uni.eku.tzs.controller;
 
-import hu.uni.eku.tzs.controller.dto.ComplexNumberDto;
-import hu.uni.eku.tzs.controller.dto.ComplexNumberRecordRequestDto;
-import hu.uni.eku.tzs.model.ComplexNumber;
-import hu.uni.eku.tzs.service.ComplexNumberService;
-import hu.uni.eku.tzs.service.exceptions.ComplexNumberAlreadyExistsException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import hu.uni.eku.tzs.controller.dto.ComplexNumberDto;
+import hu.uni.eku.tzs.controller.dto.ComplexNumberRecordRequestDto;
+import hu.uni.eku.tzs.model.ComplexNumber;
+import hu.uni.eku.tzs.service.ComplexNumberService;
+import hu.uni.eku.tzs.service.exceptions.ComplexNumberAlreadyExistsException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ComplexNumberControllerTest {

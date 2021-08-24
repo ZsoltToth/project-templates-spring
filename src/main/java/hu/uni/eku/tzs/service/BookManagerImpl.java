@@ -12,13 +12,46 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class BookManagerImpl implements BookManager {
 
     private final BookRepository bookRepository;
 
     private final AuthorRepository authorRepository;
+
+    private static Book convertBookEntity2Model(BookEntity bookEntity) {
+        return new Book(
+            bookEntity.getIsbn(),
+            new Author(
+                bookEntity.getAuthor().getId(),
+                bookEntity.getAuthor().getFirstName(),
+                bookEntity.getAuthor().getLastName(),
+                bookEntity.getAuthor().getNationality()),
+            bookEntity.getTitle(),
+            bookEntity.getLanguage()
+        );
+    }
+
+    private static BookEntity convertBookModel2Entity(Book book) {
+        return BookEntity.builder()
+            .isbn(book.getIsbn())
+            .title(book.getTitle())
+            .author(convertAuthorModel2Entity(book.getAuthor()))
+            .language(book.getLanguage())
+            .build();
+    }
+
+    private static AuthorEntity convertAuthorModel2Entity(Author author) {
+        return AuthorEntity.builder()
+            .id(author.getId())
+            .firstName(author.getFirstName())
+            .lastName(author.getLastName())
+            .nationality(author.getNationality())
+            .build();
+    }
 
     @Override
     public Book record(Book book) throws BookAlreadyExistsException {
@@ -63,37 +96,6 @@ public class BookManagerImpl implements BookManager {
     public void delete(Book book) {
         bookRepository.delete(convertBookModel2Entity(book));
 
-    }
-
-    private static Book convertBookEntity2Model(BookEntity bookEntity) {
-        return new Book(
-            bookEntity.getIsbn(),
-            new Author(
-                bookEntity.getAuthor().getId(),
-                bookEntity.getAuthor().getFirstName(),
-                bookEntity.getAuthor().getLastName(),
-                bookEntity.getAuthor().getNationality()),
-            bookEntity.getTitle(),
-            bookEntity.getLanguage()
-        );
-    }
-
-    private static BookEntity convertBookModel2Entity(Book book) {
-        return BookEntity.builder()
-            .isbn(book.getIsbn())
-            .title(book.getTitle())
-            .author(convertAuthorModel2Entity(book.getAuthor()))
-            .language(book.getLanguage())
-            .build();
-    }
-
-    private static AuthorEntity convertAuthorModel2Entity(Author author) {
-        return AuthorEntity.builder()
-            .id(author.getId())
-            .firstName(author.getFirstName())
-            .lastName(author.getLastName())
-            .nationality(author.getNationality())
-            .build();
     }
 
     private AuthorEntity readOrRecordAuthor(Author author) {
