@@ -7,7 +7,6 @@ import hu.uni.eku.tzs.controller.dto.BookMapper;
 import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.model.BookInstance;
 import hu.uni.eku.tzs.service.BookInstanceManager;
-import hu.uni.eku.tzs.service.BookManager;
 import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -26,8 +25,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @RequestMapping("/books/instances")
 public class BookInstanceController {
-
-    private final BookManager bookManager;
 
     private final BookInstanceManager bookInstanceManager;
 
