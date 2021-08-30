@@ -44,7 +44,7 @@ public class BookInstanceController {
     }
 
     @PostMapping("/")
-    public BookInstanceDto create(@RequestBody BookDto bookDto){
+    public BookInstanceDto create(@RequestBody BookDto bookDto) {
         Book book = bookMapper.bookDto2Book(bookDto);
         log.debug(book.toString());
         try {
