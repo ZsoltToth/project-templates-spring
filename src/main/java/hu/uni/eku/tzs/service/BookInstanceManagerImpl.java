@@ -34,7 +34,7 @@ public class BookInstanceManagerImpl implements BookInstanceManager {
     }
 
     @Override
-    public Collection<BookInstance> readInstanceOfBook(Book book) {
+    public Collection<BookInstance> readInstancesOfBook(Book book) {
         return bookInstanceRepository.findAllByBook(book.getIsbn())
             .stream()
             .map(BookInstanceManagerImpl::convertBookInstanceEntity2Model)

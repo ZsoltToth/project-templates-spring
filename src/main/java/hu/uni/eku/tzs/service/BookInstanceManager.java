@@ -9,7 +9,7 @@ public interface BookInstanceManager {
 
     Collection<BookInstance> readAll();
 
-    Collection<BookInstance> readInstanceOfBook(Book book);
+    Collection<BookInstance> readInstancesOfBook(Book book);
 
     BookInstance record(Book book) throws BookNotFoundException;
 
