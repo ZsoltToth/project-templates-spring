@@ -36,10 +36,10 @@ class BookManagerImplTest {
     @Test
     void recordBookHappyPath() throws BookAlreadyExistsException {
         // given
-        Author douglasAdams = BookDataProvider.getDouglasAdamsModel();
-        AuthorEntity douglasAddamsEntity = BookDataProvider.getDouglasAdamsEntity();
-        Book hg2g = BookDataProvider.getHitchhikersGuide();
-        BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
+        Author douglasAdams = TestDataProvider.getDouglasAdamsModel();
+        AuthorEntity douglasAddamsEntity = TestDataProvider.getDouglasAdamsEntity();
+        Book hg2g = TestDataProvider.getHitchhikersGuide();
+        BookEntity hg2gEntity = TestDataProvider.getHitchhikersGuideEntity();
         when(bookRepository.findById(any())).thenReturn(Optional.empty());
         when(authorRepository.findById(douglasAdams.getId())).thenReturn(Optional.ofNullable(douglasAddamsEntity));
         when(bookRepository.save(any())).thenReturn(hg2gEntity);
@@ -53,11 +53,11 @@ class BookManagerImplTest {
     @Test
     void recordBookUnknownAuthor() throws BookAlreadyExistsException {
         // given
-        Author frankHerbert = BookDataProvider.getFrankHerbertModel();
-        AuthorEntity frankHerbertEntity = BookDataProvider.getFrankHerbertEntity();
-        Book dune = BookDataProvider.getDune();
-        BookEntity duneEntity = BookDataProvider.getDuneEntity();
-        when(bookRepository.findById(BookDataProvider.DUNE_ISBN)).thenReturn(Optional.empty());
+        Author frankHerbert = TestDataProvider.getFrankHerbertModel();
+        AuthorEntity frankHerbertEntity = TestDataProvider.getFrankHerbertEntity();
+        Book dune = TestDataProvider.getDune();
+        BookEntity duneEntity = TestDataProvider.getDuneEntity();
+        when(bookRepository.findById(TestDataProvider.DUNE_ISBN)).thenReturn(Optional.empty());
         when(authorRepository.findById(frankHerbert.getId())).thenReturn(Optional.empty());
         when(authorRepository.save(frankHerbertEntity)).thenReturn(frankHerbertEntity);
         when(bookRepository.save(duneEntity)).thenReturn(duneEntity);
@@ -71,9 +71,9 @@ class BookManagerImplTest {
     @Test
     void recordBookAlreadyExistsException() {
         // given
-        Book hg2g = BookDataProvider.getHitchhikersGuide();
-        BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
-        when(bookRepository.findById(BookDataProvider.HG2G_ISBN)).thenReturn(Optional.ofNullable(hg2gEntity));
+        Book hg2g = TestDataProvider.getHitchhikersGuide();
+        BookEntity hg2gEntity = TestDataProvider.getHitchhikersGuideEntity();
+        when(bookRepository.findById(TestDataProvider.HG2G_ISBN)).thenReturn(Optional.ofNullable(hg2gEntity));
         // when
         assertThatThrownBy(() -> {
             service.record(hg2g);
@@ -83,11 +83,11 @@ class BookManagerImplTest {
     @Test
     void readByIsbnHappyPath() throws BookNotFoundException {
         // given
-        when(bookRepository.findById(BookDataProvider.HG2G_ISBN))
-            .thenReturn(Optional.of(BookDataProvider.getHitchhikersGuideEntity()));
-        Book expected = BookDataProvider.getHitchhikersGuide();
+        when(bookRepository.findById(TestDataProvider.HG2G_ISBN))
+            .thenReturn(Optional.of(TestDataProvider.getHitchhikersGuideEntity()));
+        Book expected = TestDataProvider.getHitchhikersGuide();
         // when
-        Book actual = service.readByIsbn(BookDataProvider.HG2G_ISBN);
+        Book actual = service.readByIsbn(TestDataProvider.HG2G_ISBN);
         // then
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
@@ -95,24 +95,24 @@ class BookManagerImplTest {
     @Test
     void readByIsbnBookNotFoundException() {
         // given
-        when(bookRepository.findById(BookDataProvider.UNKNOWN_ISBN)).thenReturn(Optional.empty());
+        when(bookRepository.findById(TestDataProvider.UNKNOWN_ISBN)).thenReturn(Optional.empty());
         // when then
         assertThatThrownBy(() -> {
-            service.readByIsbn(BookDataProvider.UNKNOWN_ISBN);
+            service.readByIsbn(TestDataProvider.UNKNOWN_ISBN);
         }).isInstanceOf(BookNotFoundException.class)
-            .hasMessageContaining(BookDataProvider.UNKNOWN_ISBN);
+            .hasMessageContaining(TestDataProvider.UNKNOWN_ISBN);
     }
 
     @Test
     void readAllHappyPath() {
         // given
         List<BookEntity> bookEntities = List.of(
-            BookDataProvider.getDuneEntity(),
-            BookDataProvider.getHitchhikersGuideEntity()
+            TestDataProvider.getDuneEntity(),
+            TestDataProvider.getHitchhikersGuideEntity()
         );
         Collection<Book> expectedBooks = List.of(
-            BookDataProvider.getDune(),
-            BookDataProvider.getHitchhikersGuide()
+            TestDataProvider.getDune(),
+            TestDataProvider.getHitchhikersGuide()
         );
         when(bookRepository.findAll()).thenReturn(bookEntities);
         // when
@@ -127,8 +127,8 @@ class BookManagerImplTest {
     @Test
     void modifyBookHappyPath() {
         // given
-        Book hg2g = BookDataProvider.getHitchhikersGuide();
-        BookEntity hg2gEntity = BookDataProvider.getHitchhikersGuideEntity();
+        Book hg2g = TestDataProvider.getHitchhikersGuide();
+        BookEntity hg2gEntity = TestDataProvider.getHitchhikersGuideEntity();
         when(bookRepository.save(hg2gEntity)).thenReturn(hg2gEntity);
         // when
         Book actual = service.modify(hg2g);
@@ -138,7 +138,7 @@ class BookManagerImplTest {
 
     }
 
-    private static class BookDataProvider {
+    private static class TestDataProvider {
 
         public static final String UNKNOWN_ISBN = "1-00000-000-X";
 
