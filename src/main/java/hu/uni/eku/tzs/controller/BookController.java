@@ -6,6 +6,8 @@ import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.BookManager;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
 import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+@Api(tags = "Books")
 @RequestMapping("/books")
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class BookController {
 
     private final BookMapper bookMapper;
 
+    @ApiOperation("Read All")
     @GetMapping(value = {"/", ""})
     public Collection<BookDto> readAllBooks() {
         return bookManager.readAll()
@@ -39,6 +43,7 @@ public class BookController {
 
     }
 
+    @ApiOperation("Record")
     @PostMapping(value = {"", "/"})
     public BookDto create(@RequestBody BookDto recordRequestDto) {
         Book book = bookMapper.bookDto2Book(recordRequestDto);
@@ -50,6 +55,7 @@ public class BookController {
         }
     }
 
+    @ApiOperation("Update")
     @PutMapping(value = {"", "/"})
     public BookDto update(@RequestBody BookDto updateRequestDto) {
         Book book = bookMapper.bookDto2Book(updateRequestDto);
@@ -57,6 +63,7 @@ public class BookController {
         return bookMapper.book2bookDto(updatedBook);
     }
 
+    @ApiOperation("Delete")
     @DeleteMapping(value = {"", "/"})
     public void delete(@RequestParam String isbn) {
         try {
@@ -66,6 +73,7 @@ public class BookController {
         }
     }
 
+    @ApiOperation("Delete")
     @DeleteMapping(value = {"/{isbn}"})
     public void deleteBasedOnPath(@PathVariable String isbn) {
         this.delete(isbn);
