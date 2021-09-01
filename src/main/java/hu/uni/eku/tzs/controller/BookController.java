@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -45,7 +46,7 @@ public class BookController {
 
     @ApiOperation("Record")
     @PostMapping(value = {"", "/"})
-    public BookDto create(@RequestBody BookDto recordRequestDto) {
+    public BookDto create(@Valid @RequestBody BookDto recordRequestDto) {
         Book book = bookMapper.bookDto2Book(recordRequestDto);
         try {
             Book recordedBook = bookManager.record(book);
@@ -57,7 +58,7 @@ public class BookController {
 
     @ApiOperation("Update")
     @PutMapping(value = {"", "/"})
-    public BookDto update(@RequestBody BookDto updateRequestDto) {
+    public BookDto update(@Valid @RequestBody BookDto updateRequestDto) {
         Book book = bookMapper.bookDto2Book(updateRequestDto);
         Book updatedBook = bookManager.modify(book);
         return bookMapper.book2bookDto(updatedBook);
