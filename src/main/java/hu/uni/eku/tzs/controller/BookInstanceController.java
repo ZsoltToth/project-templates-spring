@@ -9,6 +9,8 @@ import hu.uni.eku.tzs.model.BookInstance;
 import hu.uni.eku.tzs.model.BookState;
 import hu.uni.eku.tzs.service.BookInstanceManager;
 import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
+@Api(tags = "Book Instances")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/books/instances")
@@ -36,6 +39,7 @@ public class BookInstanceController {
 
     private final BookMapper bookMapper;
 
+    @ApiOperation("Read All")
     @GetMapping("/")
     public Collection<BookInstanceDto> readAllBookInstances() {
         return bookInstanceManager.readAll()
@@ -44,6 +48,7 @@ public class BookInstanceController {
             .collect(Collectors.toList());
     }
 
+    @ApiOperation("Record")
     @PostMapping("/")
     public BookInstanceDto create(@RequestBody BookDto bookDto) {
         Book book = bookMapper.bookDto2Book(bookDto);
@@ -56,6 +61,7 @@ public class BookInstanceController {
         }
     }
 
+    @ApiOperation("Update")
     @PutMapping("/")
     public BookInstanceDto update(@RequestBody BookInstanceDto dto) {
         BookInstance bookInstance = new BookInstance(dto.getInventoryNo(), bookMapper.bookDto2Book(dto.getBook()),
@@ -63,6 +69,7 @@ public class BookInstanceController {
         return bookInstanceMapper.bookInstance2BookInstanceDto(bookInstanceManager.modify(bookInstance));
     }
 
+    @ApiOperation("Delete")
     @DeleteMapping("/{inventoryNo}")
     public void delete(@PathVariable String inventoryNo) {
         bookInstanceManager.delete(inventoryNo);
