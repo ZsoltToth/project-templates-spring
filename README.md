@@ -103,7 +103,7 @@ Spring Security.
 #Run -> Edit Configuration -> Environment -> VM Options
 -DDB_HOST=localhost
 -DDB_PORT=3306
--DDB_NAME=complex
+-DDB_NAME=library
 -DDB_USER=root
 -DDB_PASSWORD=password
 ```
