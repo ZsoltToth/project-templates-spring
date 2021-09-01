@@ -2,7 +2,10 @@ package hu.uni.eku.tzs.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import hu.uni.eku.tzs.controller.dto.AuthorDto;
 import hu.uni.eku.tzs.controller.dto.BookDto;
@@ -11,6 +14,7 @@ import hu.uni.eku.tzs.model.Author;
 import hu.uni.eku.tzs.model.Book;
 import hu.uni.eku.tzs.service.BookManager;
 import hu.uni.eku.tzs.service.exceptions.BookAlreadyExistsException;
+import hu.uni.eku.tzs.service.exceptions.BookNotFoundException;
 import java.util.Collection;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -71,6 +75,47 @@ class BookControllerTest {
         assertThatThrownBy(() -> {
             controller.create(duneDto);
         }).isInstanceOf(ResponseStatusException.class);
+    }
+
+    @Test
+    void updateHappyPath() {
+        // given
+        BookDto requestDto = TestDataProvider.getDuneDto();
+        Book dune = TestDataProvider.getDune();
+        when(bookMapper.bookDto2Book(requestDto)).thenReturn(dune);
+        when(bookManager.modify(dune)).thenReturn(dune);
+        when(bookMapper.book2bookDto(dune)).thenReturn(requestDto);
+        BookDto expected = TestDataProvider.getDuneDto();
+        // when
+        BookDto response = controller.update(requestDto);
+        // then
+        assertThat(response).usingRecursiveComparison()
+            .isEqualTo(expected);
+    }
+
+
+    @Test
+    void deleteFromQueryParamHappyPath() throws BookNotFoundException {
+        // given
+        Book dune = TestDataProvider.getDune();
+        when(bookManager.readByIsbn(TestDataProvider.DUNE_ISBN)).thenReturn(dune);
+        doNothing().when(bookManager).delete(dune);
+        // when
+        controller.delete(TestDataProvider.DUNE_ISBN);
+        // then is not necessary, mock are checked by default
+    }
+
+    @Test
+    void deleteFromQueryParamWhenBookNotFound() throws BookNotFoundException {
+        // given
+        final String notFoundBookIsbn = TestDataProvider.DUNE_ISBN;
+        doThrow(new BookNotFoundException()).when(bookManager).readByIsbn(notFoundBookIsbn);
+//        These two lines mean the same.
+//        doThrow(new BookNotFoundException()).when(bookManager).readByIsbn(notFoundBookIsbn);
+//        when(bookManager.readByIsbn(notFoundBookIsbn)).thenThrow(new BookNotFoundException());
+        // when then
+        assertThatThrownBy(() -> controller.delete(notFoundBookIsbn))
+            .isInstanceOf(ResponseStatusException.class);
     }
 
     private static class TestDataProvider {
