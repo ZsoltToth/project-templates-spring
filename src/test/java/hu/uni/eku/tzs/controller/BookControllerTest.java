@@ -35,9 +35,9 @@ class BookControllerTest {
     @Test
     void readAllHappyPath() {
         // given
-        when(bookManager.readAll()).thenReturn(List.of(BookControllerTestDataProvider.getDune()));
-        when(bookMapper.book2bookDto(any())).thenReturn(BookControllerTestDataProvider.getDuneDto());
-        Collection<BookDto> expected = List.of(BookControllerTestDataProvider.getDuneDto());
+        when(bookManager.readAll()).thenReturn(List.of(TestDataProvider.getDune()));
+        when(bookMapper.book2bookDto(any())).thenReturn(TestDataProvider.getDuneDto());
+        Collection<BookDto> expected = List.of(TestDataProvider.getDuneDto());
         // when
         Collection<BookDto> actual = controller.readAllBooks();
         //then
@@ -49,8 +49,8 @@ class BookControllerTest {
     @Test
     void createBookHappyPath() throws BookAlreadyExistsException {
         // given
-        Book dune = BookControllerTestDataProvider.getDune();
-        BookDto duneDto = BookControllerTestDataProvider.getDuneDto();
+        Book dune = TestDataProvider.getDune();
+        BookDto duneDto = TestDataProvider.getDuneDto();
         when(bookMapper.bookDto2Book(duneDto)).thenReturn(dune);
         when(bookManager.record(dune)).thenReturn(dune);
         when(bookMapper.book2bookDto(dune)).thenReturn(duneDto);
@@ -63,8 +63,8 @@ class BookControllerTest {
     @Test
     void createBookThrowsBookAlreadyExistsException() throws BookAlreadyExistsException {
         // given
-        Book dune = BookControllerTestDataProvider.getDune();
-        BookDto duneDto = BookControllerTestDataProvider.getDuneDto();
+        Book dune = TestDataProvider.getDune();
+        BookDto duneDto = TestDataProvider.getDuneDto();
         when(bookMapper.bookDto2Book(duneDto)).thenReturn(dune);
         when(bookManager.record(dune)).thenThrow(new BookAlreadyExistsException());
         // when then
@@ -73,7 +73,7 @@ class BookControllerTest {
         }).isInstanceOf(ResponseStatusException.class);
     }
 
-    private static class BookControllerTestDataProvider {
+    private static class TestDataProvider {
 
         public static final String DUNE_ISBN = "1-0000-000";
 
